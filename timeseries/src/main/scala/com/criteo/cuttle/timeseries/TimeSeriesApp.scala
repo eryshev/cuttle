@@ -811,10 +811,8 @@ private[timeseries] case class TimeSeriesApp(project: CuttleProject,
       }
 
     case GET at url"/api/timeseries/calendar/focus?start=$start&end=$end&jobs=$jobs" =>
-      val filteredJobs = Option(jobs.split(",").toSet.filterNot(_.isEmpty))
-        .filterNot(_.isEmpty)
-        .getOrElse(allIds)
-      val q = CalendarFocusQuery(filteredJobs, start, end)
+      val filteredJobs = parseJobIds(jobs)
+      val q = CalendarFocusQuery(if (filteredJobs.nonEmpty) filteredJobs else allIds, start, end)
 
       Ok(getFocusView(q, filteredJobs))
 
